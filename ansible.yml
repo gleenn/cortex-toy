@@ -1,0 +1,57 @@
+---
+- hosts: all
+  become: true
+  tasks:
+  - name: "Copy local ansible.env to fog"
+    copy: src=ansible.env dest=/home/glenn/.env
+
+  - name: "Install packages"
+    apt: name={{item}} update_cache=yes
+    with_items:
+      - zsh
+      - zsh-common
+#  - name: "Install packages"
+#    yum: pkg={{item}} state=installed
+#    with_items:
+#      - java-1.8.0-openjdk
+#      - htop
+#      - iptraf
+#      - tcpdump
+#      - mail
+#      - git
+#      - telnet
+#      - ncdu
+#      - postgresql95
+#      - python27-devel
+#      - python27-numpy
+#      - python27-scipy
+#      - gcc
+#      - gcc-c++
+#      - mosh
+
+  - command: "java -version"
+    register: java_version
+
+  - assert: { that: "'openjdk version \"1.8.0_' in java_version.stderr" }
+
+  - name: "Source .env file in .zshrc"
+#    lineinfile: dest=/home/glenn/.zshrc line=". /home/glenn/.env"
+    copy: src=ansible.env dest=/home/glenn/.zshrc
+
+
+  - name: "Get Leiningen install script"
+    get_url: url=https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein dest=/usr/local/bin/lein mode=0755
+
+  - file: path=/home/glenn/.lein state=directory
+
+  - name: "Add lein-try to profiles.clj"
+    copy:
+      dest: /home/glenn/.lein/profiles.clj
+      content: "{:user {:plugins [[lein-try \"0.4.3\"]]}}"
+
+  - name: "Run Leiningen install script"
+    command: "/usr/local/bin/lein -v"
+    environment:
+      LEIN_ROOT: true
+
+#  - authorized_key: user=glenn key="ssh-rsa AAA....=="
