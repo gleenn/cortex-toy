@@ -10,6 +10,7 @@
     with_items:
       - zsh
       - zsh-common
+      - nmap
 #  - name: "Install packages"
 #    yum: pkg={{item}} state=installed
 #    with_items:
@@ -42,7 +43,7 @@
   - name: "Get Leiningen install script"
     get_url: url=https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein dest=/usr/local/bin/lein mode=0755
 
-  - file: path=/home/glenn/.lein state=directory
+  - file: path=/home/glenn/.lein state=directory owner=glenn group=glenn mode=0755
 
   - name: "Add lein-try to profiles.clj"
     copy:
