@@ -56,3 +56,6 @@
       LEIN_ROOT: true
 
 #  - authorized_key: user=glenn key="ssh-rsa AAA....=="
+
+  - name: "Get source code"
+    copy: src=project.clj dest=/home/glenn/project.clj owner=glenn group=glenn mode=0755
