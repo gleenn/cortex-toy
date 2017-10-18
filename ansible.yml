@@ -11,6 +11,7 @@
       - zsh
       - zsh-common
       - nmap
+      - nvidia-cuda-toolkit
 #  - name: "Install packages"
 #    yum: pkg={{item}} state=installed
 #    with_items:
@@ -59,3 +60,16 @@
 
   - name: "Get source code"
     copy: src=project.clj dest=/home/glenn/project.clj owner=glenn group=glenn mode=0755
+
+  - name: "Get source code"
+    copy: src=libcudnn7_7.0.3.11-1+cuda8.0_amd64.deb dest=/home/glenn/. owner=glenn group=glenn mode=0755
+    copy: src=libcudnn7-dev_7.0.3.11-1+cuda8.0_amd64.deb dest=/home/glenn/. owner=glenn group=glenn mode=0755
+
+  - name: "Install cudnn dev"
+    apt: name=libcudnn7-dev_7.0.3.11-1+cuda8.0_amd64.deb
+
+  - name: "Install cudnn"
+    apt: name=libcudnn7_7.0.3.11-1+cuda8.0_amd64.deb
+
+  - name: "Fix deb deps"
+    command: "sudo apt-get install -f"

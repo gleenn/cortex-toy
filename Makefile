@@ -11,9 +11,11 @@ ansible:
 ssh:
 	ssh ben
 
-remote_repl:
+remote_setup:
 	scp -i ~/.ssh/id_bens_server_rsa -F ~/.ssh/config -r ./project.clj ./src ./resources ./test glenn@ml.benjmann.net:
 	ssh -F ~/.ssh/config -i ~/.ssh/id_bens_server_rsa glenn@ml.benjmann.net "lein deps"
+
+remote_repl:
 #	ssh -i ~/.ssh/id_bens_server_rsa -F ~/.ssh/config ben "lein repl :headless :port 54545 & echo $! > lein.pid"
 	ssh -i ~/.ssh/id_bens_server_rsa -F ~/.ssh/config ben "lein repl :headless :port 54545"
 
