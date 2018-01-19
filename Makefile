@@ -22,5 +22,11 @@ remote_repl:
 #kill_remote_repl:
 #	ssh ben "killall lein"
 
-tunnel:
+tunnel_repl:
 	ssh -L 54545:localhost:54545 glenn@ben -N
+
+tunnel_web:
+	ssh -L 8091:localhost:8091 glenn@ben -N
+
+open_web:
+	open http://localhost:8091
