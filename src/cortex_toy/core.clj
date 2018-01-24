@@ -27,4 +27,5 @@
     (println "\nXOR results after training:")
     (clojure.pprint/pprint (execute/run trained xor-dataset))))
 
-(time (train-xor))
+(defn -main []
+  (time (train-xor)))
