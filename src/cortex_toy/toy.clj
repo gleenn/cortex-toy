@@ -7,6 +7,7 @@
 (def flowers
   {"Iris-setosa" [1.0 0.0 0.0]
    "Iris-versicolor" [0.0 1.0 0.0]
+   "Iris-virginica" [0.0 0.0 1.0]
    })
 
 (def dataset
