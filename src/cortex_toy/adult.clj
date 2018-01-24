@@ -20,12 +20,16 @@
 (defn dataset [file-name]
   (with-open [reader (io/reader file-name)]
     (->> (read-csv reader)
-         (map (fn [row]
-                (hash-map :x (map #(%1 %2) [->int str/trim ->int str/trim ->int
-                                            str/trim str/trim str/trim str/trim
-                                            str/trim ->int ->int ->int str/trim]
-                                  (butlast row))
-                          :y (greater-than-50K (str/trim (last row))))))
+         (reduce (fn [result row]
+                   (let [converted-columns (map #(%1 %2) [->int str/trim ->int str/trim ->int
+                                              str/trim str/trim str/trim str/trim
+                                              str/trim ->int ->int ->int str/trim]
+                                    (butlast row))]
+                     (if (some nil? converted-columns)
+                       result
+                       (hash-map :x converted-columns
+                                 :y (greater-than-50K (str/trim (last row))))))
+                   []))
          doall)))
 
 (def training-data
@@ -56,3 +60,5 @@
 
 (defn -main []
   (time (train)))
+
+(-main)
