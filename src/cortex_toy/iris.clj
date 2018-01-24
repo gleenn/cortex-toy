@@ -188,4 +188,5 @@
     (println "\nresults after training:")
     (clojure.pprint/pprint (execute/run trained dataset))))
 
-(time (train))
+(defn -main []
+  (time (train)))
