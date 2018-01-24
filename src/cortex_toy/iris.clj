@@ -1,4 +1,4 @@
-(ns cortex-toy.toy
+(ns cortex-toy.iris
   (:require [cortex.experiment.train :as train]
             [cortex.nn.execute :as execute]
             [cortex.nn.layers :as layers]
