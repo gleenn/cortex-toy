@@ -8,48 +8,49 @@
             [clojure.string :as str]))
 
 
-;(def dataset [{:x [5.1 3.5 1.4 0.2] :y [1.0 0.0 0.0]}])
-
-(def greater-than-50K
-  {"<=50K." [1.0 0.0]
-   ">50K."  [0.0 1.0]})
+(defn greater-than-50K [input]
+  (case input
+    "<=50K" [1.0 0.0]
+    ">50K" [0.0 1.0]
+    nil))
 
 (defn ->int [^String input]
-  (Long/parseLong (str/trim input)))
+  (if input (Long/parseLong input)))
+
+(defn ?->nil [^String input]
+  (if (= input "?")
+    nil
+    input))
+
+(def column-conversion-fns
+  [->int identity ->int identity ->int identity identity identity identity identity ->int ->int ->int identity identity])
 
 (defn dataset [file-name]
   (with-open [reader (io/reader file-name)]
     (->> (read-csv reader)
-         (reduce (fn [result row]
-                   (let [converted-columns (map #(%1 %2) [->int str/trim ->int str/trim ->int
-                                              str/trim str/trim str/trim str/trim
-                                              str/trim ->int ->int ->int str/trim]
-                                    (butlast row))]
-                     (if (some nil? converted-columns)
-                       result
-                       (hash-map :x converted-columns
-                                 :y (greater-than-50K (str/trim (last row))))))
-                   []))
-         doall)))
+         (mapv (fn [row]
+                 {:x (map (fn [func val] (-> val str/trim ?->nil func))
+                          column-conversion-fns
+                          (butlast row))
+                  :y (greater-than-50K (str/trim (last row)))})))))
 
-(def training-data
+(defn training-data []
   (dataset "resources/adult.data"))
 
-(def testing-data
+(defn testing-data []
   (dataset "resources/adult.test"))
 
-(def neural-network
+(defn neural-network []
   (network/linear-network
     [(layers/input 15 1 1 :id :x)
      (layers/linear->tanh 10)
      (layers/linear 3)
-     (layers/softmax :id :y)
-     ]))
+     (layers/softmax :id :y)]))
 
 (defn train []
   (let [trained (train/train-n neural-network
-                               training-data
-                               testing-data
+                               (training-data)
+                               (testing-data)
                                :batch-size 4
                                :epoch-count 300
                                :simple-loss-print? true)]
@@ -61,4 +62,4 @@
 (defn -main []
   (time (train)))
 
-(-main)
+;(-main)
