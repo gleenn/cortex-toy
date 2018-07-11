@@ -12,7 +12,7 @@
   (case input
     "<=50K" [1.0 0.0]
     ">50K" [0.0 1.0]
-    nil))
+    (throw (Exception. (str "This isn't #{\"<=50K" ">50K\"}:" input)))))
 
 (defn ->int [^String input]
   (if input (Long/parseLong input)))
@@ -49,18 +49,18 @@
 (defn dataset-numbers-only [file-name]
   (with-open [reader (io/reader file-name)]
     (->> (read-csv reader)
-         (map (fn [row] (map #(nth row %) [0 2 4 10 11 12 14])))
+         (map (fn [row] (map #(get row %) [0 2 4 10 11 12 14])))
          (mapv (fn [row]
-                 {:x (mapv (fn [val] (-> val str/trim ?->nil ->int))
-                           (butlast row))
+                 {:x (mapv (fn [val] (-> val str/trim ?->nil ->int)) (butlast row))
                   :y (greater-than-50K (str/trim (last row)))}))
+         (remove #(->> % :x (some nil?)))
          doall)))
 
 (defn training-data []
-  (dataset "resources/adult.data"))
+  (dataset-numbers-only "resources/adult.data"))
 
 (defn testing-data []
-  (dataset "resources/adult.test"))
+  (dataset-numbers-only "resources/adult.test"))
 
 (defn neural-network []
   (network/linear-network
