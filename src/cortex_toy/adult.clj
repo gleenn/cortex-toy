@@ -22,30 +22,39 @@
     nil
     input))
 
-(def column-conversion-fns
-  [->int
-   identity
-   ->int
-   identity
-   ->int
-   identity
-   identity
-   identity
-   identity
-   identity
-   ->int
-   ->int
-   ->int
-   identity])
-
 (defn dataset [file-name]
+  (let [column-conversion-fns [->int
+                               identity
+                               ->int
+                               identity
+                               ->int
+                               identity
+                               identity
+                               identity
+                               identity
+                               identity
+                               ->int
+                               ->int
+                               ->int
+                               identity]]
+    (with-open [reader (io/reader file-name)]
+      (->> (read-csv reader)
+           (map (fn [row]
+                  {:x (map (fn [func val] (-> val str/trim ?->nil func))
+                           column-conversion-fns
+                           (butlast row))
+                   :y (greater-than-50K (str/trim (last row)))}))
+           doall))))
+
+(defn dataset-numbers-only [file-name]
   (with-open [reader (io/reader file-name)]
     (->> (read-csv reader)
+         (map (fn [row] (map #(nth row %) [0 2 4 10 11 12 14])))
          (mapv (fn [row]
-                 {:x (map (fn [func val] (-> val str/trim ?->nil func))
-                          column-conversion-fns
-                          (butlast row))
-                  :y (greater-than-50K (str/trim (last row)))})))))
+                 {:x (mapv (fn [val] (-> val str/trim ?->nil ->int))
+                           (butlast row))
+                  :y (greater-than-50K (str/trim (last row)))}))
+         doall)))
 
 (defn training-data []
   (dataset "resources/adult.data"))
