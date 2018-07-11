@@ -23,7 +23,20 @@
     input))
 
 (def column-conversion-fns
-  [->int identity ->int identity ->int identity identity identity identity identity ->int ->int ->int identity identity])
+  [->int
+   identity
+   ->int
+   identity
+   ->int
+   identity
+   identity
+   identity
+   identity
+   identity
+   ->int
+   ->int
+   ->int
+   identity])
 
 (defn dataset [file-name]
   (with-open [reader (io/reader file-name)]
@@ -42,17 +55,19 @@
 
 (defn neural-network []
   (network/linear-network
-    [(layers/input 15 1 1 :id :x)
+    [(layers/input 14 1 1 :id :x)
      (layers/linear->tanh 10)
-     (layers/linear 3)
+     (layers/linear 10)
+     ;(layers/dropout 0.9)
+     ;(layers/linear 10)
      (layers/softmax :id :y)]))
 
 (defn train []
-  (let [trained (train/train-n neural-network
+  (let [trained (train/train-n (neural-network)
                                (training-data)
                                (testing-data)
-                               :batch-size 4
-                               :epoch-count 300
+                               ;:batch-size 4
+                               :epoch-count 1
                                :simple-loss-print? true)]
     (println "\nresults before training:")
     (clojure.pprint/pprint (execute/run neural-network dataset))
