@@ -95,18 +95,18 @@
      (layers/linear 2)
      (layers/softmax :id :y)]))
 
-(defn train []
-  (let [trained (train/train-n (neural-network)
-                               (training-data)
-                               (testing-data)
-                               :epoch-count 30
-                               :simple-loss-print? true)]
-    (println "\nresults before training:")
-    (clojure.pprint/pprint (execute/run (neural-network) (testing-data)))
-    (println "\nresults after training:")
-    (clojure.pprint/pprint (execute/run trained (testing-data)))))
+(defn train
+  ([] (train (neural-network)))
+  ([neural-network]
+   (let [trained (train/train-n neural-network
+                                (training-data)
+                                (testing-data)
+                                :epoch-count 30
+                                :simple-loss-print? true)]
+     (println "\nresults after training:")
+     (clojure.pprint/pprint (execute/run trained (testing-data))))))
 
-(defn -main []
-  (time (train)))
-
-;(-main)
+(defn -main [continue]
+  (case continue
+    "train" (time (train))
+    "continue" (time (train (train/load-network "trained-network.nippy")))))
