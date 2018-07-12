@@ -52,8 +52,19 @@
 
 (def data
   [["39" " State-gov" " 77516" " Bachelors" " 13" " Never-married" " Adm-clerical" " Not-in-family" " White" " Male" " 2174" " 0" " 40" " United-States" " <=50K"]
-   ["50" " Self-emp-not-inc" " ?" " Bachelors" " 13" " Married-civ-spouse" " Exec-managerial" " Husband" " White" " Male" " 0" " 0" " 13" " United-States" " <=50K"]])
+   ["50" " Self-emp-not-inc" " ?" " Bachelors" " 13" " Married-civ-spouse" " Exec-managerial" " Husband" " White" " Male" " 0" " 0" " 13" " United-States" " <=50K"]
+   ["?" "?" "?" "?" "?" "?" "?" "?" "?" "?" "?" "?" "?" "?" "?"]
+   ])
 
 (deftest map-row-test
   (let [result (->> data (map map-row))]
-    (is (= 104 (count (first result))))))
+    (is (= [104 0 0] (map count result)))))
+
+#_(deftest testing-data-test
+  (testing "no nils"
+    (let [result (testing-data)]
+      (doseq [row result]
+        (if (not= 104 (count (:x row)))
+          (prn :failed-wrong-length (count (:x row)) " " row))
+        (if (some nil? row)
+          (prn :failed-has-nil row))))))

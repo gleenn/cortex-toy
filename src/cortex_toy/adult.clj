@@ -40,21 +40,25 @@
                                                     "Vietnam" "Yugoslavia"} %)])
 
 (defn map-row [row]
-  (->> row
-       (map
-         (fn [func val]
-           (some-> val str/trim ?->nil func))
-         column-conversion-fns)
-       flatten
-       (into [])))
+  (let [result (->> row
+                    (map
+                      (fn [func val]
+                        (some-> val str/trim ?->nil func))
+                      column-conversion-fns)
+                    flatten
+                    (into []))]
+    (if (some nil? result) nil result)))
 
 (defn dataset [file-name]
   (with-open [reader (io/reader file-name)]
     (->> (read-csv reader)
          (map (fn [row]
                 {:x (map-row row)
-                 :y (some-> row last str/trim (util/one-hot-encode #{">50K" "<=50K"}))}))
+                 :y (some->> row last str/trim ?->nil (util/one-hot-encode #{">50K" "<=50K"}))}))
+         (remove #(->> % :x nil?))
          (remove #(->> % :x (some nil?)))
+         (remove #(->> % :y nil?))
+         (remove #(->> % :y (some nil?)))
          (into []))))
 
 #_(defn dataset-numbers-only [file-name]
@@ -96,6 +100,7 @@
                                (training-data)
                                (testing-data)
                                :epoch-count 30
+                               :batch-size 10
                                :simple-loss-print? true)]
     (println "\nresults before training:")
     (clojure.pprint/pprint (execute/run (neural-network) (testing-data)))
