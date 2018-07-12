@@ -6,7 +6,8 @@
             [clojure.java.io :as io]
             [clojure.data.csv :refer [read-csv]]
             [clojure.string :as str]
-            [cortex.util :as util]))
+            [cortex.util :as util]
+            [clojure.pprint :refer [pprint]]))
 
 
 (defn ->int [^String input]
@@ -104,7 +105,7 @@
                                 :epoch-count 30
                                 :simple-loss-print? true)]
      (println "\nresults after training:")
-     (clojure.pprint/pprint (execute/run trained (testing-data))))))
+     (pprint (execute/run trained (testing-data))))))
 
 (defn -main [continue]
   (case continue
