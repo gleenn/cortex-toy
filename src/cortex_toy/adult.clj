@@ -90,9 +90,9 @@
   (network/linear-network
     [(layers/input 104 1 1 :id :x)
      (layers/linear->tanh 10)
+     (layers/dropout 0.9)
+     (layers/linear->tanh 10)
      (layers/linear 2)
-     ;(layers/dropout 0.9)
-     ;(layers/linear 10)
      (layers/softmax :id :y)]))
 
 (defn train []
@@ -100,7 +100,6 @@
                                (training-data)
                                (testing-data)
                                :epoch-count 30
-                               :batch-size 10
                                :simple-loss-print? true)]
     (println "\nresults before training:")
     (clojure.pprint/pprint (execute/run (neural-network) (testing-data)))
