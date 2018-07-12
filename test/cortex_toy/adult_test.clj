@@ -68,3 +68,7 @@
           (prn :failed-wrong-length (count (:x row)) " " row))
         (if (some nil? row)
           (prn :failed-has-nil row))))))
+
+(deftest ^:focus percent-correct-test
+  (is (= 0.5 (percent-correct [{:y [1.0 0.1]} {:y [1.0 0.1]}]
+                              [{:y [1.0 0.1]} {:y [0.1 1.0]}]))))

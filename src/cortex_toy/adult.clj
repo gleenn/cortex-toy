@@ -96,16 +96,27 @@
      (layers/linear 2)
      (layers/softmax :id :y)]))
 
+(defn percent-correct [testing-data results]
+  (let [total-results (count results)
+        correct-results (->> (map (fn [correct guess]
+                                    (= (util/max-index (:y correct)) (util/max-index (:y guess))))
+                                  testing-data
+                                  results)
+                             (filter identity)
+                             count)]
+    (/ (float correct-results) total-results)))
+
 (defn train
   ([] (train (neural-network)))
   ([neural-network]
-   (let [trained (train/train-n neural-network
+   (let [the-testing-data (testing-data)
+         trained (train/train-n neural-network
                                 (training-data)
-                                (testing-data)
-                                :epoch-count 30
-                                :simple-loss-print? true)]
-     (println "\nresults after training:")
-     (pprint (execute/run trained (testing-data))))))
+                                the-testing-data
+                                :epoch-count 200
+                                :simple-loss-print? true)
+         results (execute/run trained the-testing-data)]
+     (println "Percent correct: " (percent-correct the-testing-data results)))))
 
 (defn -main [continue]
   (case continue
