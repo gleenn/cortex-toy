@@ -1,29 +1,40 @@
 (ns cortex-toy.adult-test
   (:require [clojure.test :refer :all]
-            [cortex-toy.adult :refer [dataset dataset-numbers-only]]))
+            [cortex-toy.adult :refer :all]
+            [clojure.data.csv :refer [read-csv]]
+            [clojure.java.io :as io]))
 
 (deftest dataset-test
   (testing "turns csv rows into kewl data"
     (let [result (dataset "resources/adult.small")]
-      (is (= 6 (count result)))
-      (is (= (repeat 6 14) (map (comp count :x) result)))
-      (is (= (repeat 6 2) (map (comp count :y) result)))
+      (let [num-rows-expected 1]
+        (is (= num-rows-expected (count result)))
+        (is (= (repeat num-rows-expected 104) (map (comp count :x) result)))
+        (is (= (repeat num-rows-expected 5) (map (comp count :y) result)))
 
-      (is (= [{:x [39 "State-gov" 77516 "Bachelors" 13 "Never-married" "Adm-clerical" "Not-in-family" "White" "Male" 2174 0 40 "United-States"]
-               :y [1.0 0.0]}
-              {:x [50 "Self-emp-not-inc" nil "Bachelors" 13 "Married-civ-spouse" "Exec-managerial" "Husband" "White" "Male" 0 0 13 "United-States"]
-               :y [1.0 0.0]}
-              {:x [38 nil 215646 "HS-grad" 9 "Divorced" "Handlers-cleaners" "Not-in-family" "White" "Male" 0 0 40 "United-States"]
-               :y [1.0 0.0]}
-              {:x [53 "Private" 234721 "11th" 7 nil "Handlers-cleaners" "Husband" "Black" "Male" 0 0 40 "United-States"]
-               :y [0.0 1.0]}
-              {:x [28 "Private" 338409 "Bachelors" 13 "Married-civ-spouse" nil "Wife" "Black" "Female" 0 0 40 "Cuba"]
-               :y [0.0 1.0]}
-              {:x [nil nil nil nil nil nil nil nil nil nil nil nil nil nil] :y [1.0 0.0]}]
+        (is (= [{:x [39 0.0 0.0 1.0 0.0 0.0 0.0 0.0 0.0 77516 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0
+                  0.0 13 1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 0.0
+                  0.0 0.0 0.0 0.0 0.0 1.0 0.0 0.0 1.0 0.0 2174 0 40 0.0 0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+                  0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+                  0.0 0.0]
+                 :y [0.0 0.0 0.0 0.0 0.0]}] result))
+        #_(is (= [{:x [39 "State-gov" 77516 "Bachelors" 13 "Never-married" "Adm-clerical" "Not-in-family" "White" "Male" 2174 0 40 "United-States"]
+                   :y [1.0 0.0]}
+                  {:x [50 "Self-emp-not-inc" nil "Bachelors" 13 "Married-civ-spouse" "Exec-managerial" "Husband" "White" "Male" 0 0 13 "United-States"]
+                   :y [1.0 0.0]}
+                  {:x [38 nil 215646 "HS-grad" 9 "Divorced" "Handlers-cleaners" "Not-in-family" "White" "Male" 0 0 40 "United-States"]
+                   :y [1.0 0.0]}
+                  {:x [53 "Private" 234721 "11th" 7 nil "Handlers-cleaners" "Husband" "Black" "Male" 0 0 40 "United-States"]
+                   :y [0.0 1.0]}
+                  {:x [28 "Private" 338409 "Bachelors" 13 "Married-civ-spouse" nil "Wife" "Black" "Female" 0 0 40 "Cuba"]
+                   :y [0.0 1.0]}
+                  {:x [nil nil nil nil nil nil nil nil nil nil nil nil nil nil] :y [1.0 0.0]}
+                  {:x [nil nil nil nil nil "\"\"" nil nil nil nil nil nil nil nil] :y [1.0 0.0]}
+                  {:x [nil nil nil nil nil "" nil nil nil nil nil nil nil nil] :y [1.0 0.0]}]
 
-             result)))))
+                 result))))))
 
-(deftest dataset-numbers-only-test
+#_(deftest dataset-numbers-only-test
   (testing "turns csv rows into kewl data"
     (let [result (dataset-numbers-only "resources/adult.small")]
       (is (= 4 (count result)))
@@ -38,3 +49,11 @@
               #_{:x [nil nil nil nil nil nil] :y [1.0 0.0]}]
 
              result)))))
+
+(def data
+  [["39" " State-gov" " 77516" " Bachelors" " 13" " Never-married" " Adm-clerical" " Not-in-family" " White" " Male" " 2174" " 0" " 40" " United-States" " <=50K"]
+   ["50" " Self-emp-not-inc" " ?" " Bachelors" " 13" " Married-civ-spouse" " Exec-managerial" " Husband" " White" " Male" " 0" " 0" " 13" " United-States" " <=50K"]])
+
+(deftest map-row-test
+  (let [result (->> data (map map-row))]
+    (is (= 104 (count (first result))))))
