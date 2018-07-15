@@ -121,4 +121,5 @@
 (defn -main [continue]
   (case continue
     "train" (time (train))
-    "continue" (time (train (train/load-network "trained-network.nippy")))))
+    "continue" (time (train (train/load-network "trained-network.nippy")))
+    (println "Usage: lein run (train|continue)")))
