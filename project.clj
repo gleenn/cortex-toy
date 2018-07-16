@@ -8,7 +8,8 @@
 
   ;:plugins [[lein-environ "1.1.0"]]
 
-  :profiles {:test         [:project/test #_:profiles/test]
+  :profiles {:uberjar      {:aot :all}
+             :test         [:project/test #_:profiles/test]
              :project/test {:dependencies [[expound "0.7.1"]
                                            [ring/ring-mock "0.3.0"]
                                            [audiogum/picomock "0.1.11"]]
