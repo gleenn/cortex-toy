@@ -8,3 +8,5 @@ if ! dpkg-query -W cuda; then
   apt-get update
   apt-get install cuda -y
 fi
+
+echo "`nvidia-smi` should now work!"

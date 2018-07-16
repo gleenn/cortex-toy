@@ -38,3 +38,4 @@ create-goog-instance:
 
 install-goog-instance:
 	scp -r scripts/* guppy
+
