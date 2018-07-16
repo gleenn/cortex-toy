@@ -62,7 +62,7 @@
 
 #_(deftest testing-data-test
   (testing "no nils"
-    (let [result (testing-data)]
+    (let [result (make-testing-data)]
       (doseq [row result]
         (if (not= 104 (count (:x row)))
           (prn :failed-wrong-length (count (:x row)) " " row))

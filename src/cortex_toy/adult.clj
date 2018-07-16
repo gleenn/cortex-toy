@@ -73,10 +73,10 @@
          (remove #(->> % :x (some nil?)))
          doall)))
 
-(defn training-data []
+(defn make-training-data []
   (dataset "resources/adult.data"))
 
-(defn testing-data []
+(defn make-testing-data []
   (dataset "resources/adult.test"))
 
 #_(defn neural-network-numbers-only []
@@ -88,7 +88,7 @@
      ;(layers/linear 10)
      (layers/softmax :id :y)]))
 
-(defn neural-network []
+(defn make-neural-network []
   (network/linear-network
     [(layers/input 104 1 1 :id :x)
      (layers/linear->tanh 10)
@@ -108,17 +108,18 @@
     (/ (float correct-results) total-results)))
 
 (defn train
-  ([epoch-count] (train epoch-count (neural-network)))
+  ([epoch-count] (train epoch-count (make-neural-network)))
   ([epoch-count neural-network]
-   (let [the-testing-data (testing-data)]
+   (let [testing-data (make-testing-data)]
      (train/train-n neural-network
-                    (training-data)
-                    the-testing-data
+                    (make-training-data)
+                    testing-data
                     :epoch-count epoch-count
-                    :simple-loss-print? true))))
+                    :simple-loss-print? true)
+     (test neural-network))))
 
 (defn test [neural-network]
-  (let [the-testing-data (testing-data)
+  (let [the-testing-data (make-testing-data)
         results (execute/run neural-network the-testing-data)]
     (println "Percent correct: " (percent-correct the-testing-data results))))
 
