@@ -111,22 +111,21 @@
 (defn train
   ([epoch-count] (train epoch-count (make-neural-network)))
   ([epoch-count neural-network]
-   (let [testing-data (make-testing-data)]
-     (train/train-n neural-network
-                    (make-training-data)
-                    testing-data
-                    :epoch-count epoch-count
-                    :simple-loss-print? true)
-     (test neural-network))))
+   (println "Epoch count: " epoch-count)
+   (train/train-n neural-network
+                  (make-training-data)
+                  (make-testing-data)
+                  :epoch-count epoch-count
+                  :simple-loss-print? true)))
 
 (defn evaluate [neural-network]
-  (let [the-testing-data (make-testing-data)
-        results (execute/run neural-network the-testing-data)]
-    (println "Percent correct: " (percent-correct the-testing-data results))))
+  (let [testing-data (make-testing-data)
+        results (execute/run neural-network testing-data)]
+    (println "Percent correct: " (percent-correct testing-data results))))
 
 (defn -main [action]
   (case action
-    "train" (time (train (or (env :epoch-count) 20)))
-    "continue" (time (train (train/load-network "trained-network.nippy")))
+    "train" (time (train (Long/parseLong (or (env :epoch-count) "20"))))
+    "continue" (time (train (Long/parseLong (or (env :epoch-count) "20")) (train/load-network "trained-network.nippy")))
     "evaluate" (time (evaluate (train/load-network "trained-network.nippy")))
     (println "Usage: lein run (train|continue|evaluate)")))
