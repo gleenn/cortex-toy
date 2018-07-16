@@ -7,7 +7,8 @@
             [clojure.data.csv :refer [read-csv]]
             [clojure.string :as str]
             [cortex.util :as util]
-            [clojure.pprint :refer [pprint]]))
+            [clojure.pprint :refer [pprint]]
+            [environ.core :refer [env]]))
 
 
 (defn ->int [^String input]
@@ -107,19 +108,23 @@
     (/ (float correct-results) total-results)))
 
 (defn train
-  ([] (train (neural-network)))
-  ([neural-network]
-   (let [the-testing-data (testing-data)
-         trained (train/train-n neural-network
-                                (training-data)
-                                the-testing-data
-                                :epoch-count 200
-                                :simple-loss-print? true)
-         results (execute/run trained the-testing-data)]
-     (println "Percent correct: " (percent-correct the-testing-data results)))))
+  ([epoch-count] (train epoch-count (neural-network)))
+  ([epoch-count neural-network]
+   (let [the-testing-data (testing-data)]
+     (train/train-n neural-network
+                    (training-data)
+                    the-testing-data
+                    :epoch-count epoch-count
+                    :simple-loss-print? true))))
 
-(defn -main [continue]
-  (case continue
-    "train" (time (train))
+(defn test [neural-network]
+  (let [the-testing-data (testing-data)
+        results (execute/run neural-network the-testing-data)]
+    (println "Percent correct: " (percent-correct the-testing-data results))))
+
+(defn -main [action]
+  (case action
+    "train" (time (train (or (env :epoch-count) 20)))
     "continue" (time (train (train/load-network "trained-network.nippy")))
-    (println "Usage: lein run (train|continue)")))
+    "test" (time (test (train/load-network "trained-network.nippy")))
+    (println "Usage: lein run (train|continue|test)")))

@@ -3,7 +3,10 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [thinktopic/cortex "0.9.22"]
                  [thinktopic/experiment "0.9.22"]
-                 [org.clojure/data.csv "0.1.3"]]
+                 [org.clojure/data.csv "0.1.3"]
+                 [environ "1.1.0"]]
+
+  ;:plugins [[lein-environ "1.1.0"]]
 
   :profiles {:test         [:project/test #_:profiles/test]
              :project/test {:dependencies [[expound "0.7.1"]
