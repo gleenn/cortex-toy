@@ -118,7 +118,7 @@
                     :simple-loss-print? true)
      (test neural-network))))
 
-(defn test [neural-network]
+(defn evaluate [neural-network]
   (let [the-testing-data (make-testing-data)
         results (execute/run neural-network the-testing-data)]
     (println "Percent correct: " (percent-correct the-testing-data results))))
@@ -127,5 +127,5 @@
   (case action
     "train" (time (train (or (env :epoch-count) 20)))
     "continue" (time (train (train/load-network "trained-network.nippy")))
-    "test" (time (test (train/load-network "trained-network.nippy")))
-    (println "Usage: lein run (train|continue|test)")))
+    "evaluate" (time (evaluate (train/load-network "trained-network.nippy")))
+    (println "Usage: lein run (train|continue|evaluate)")))
